@@ -5,9 +5,11 @@ const cors = require('cors');
 const app = express();
 
 
-const TEST_WEBSITE = 'https://www.google.com';
-
-
+const allowedOrigins = [
+    'https://www.google.com',
+    'https://tassets.tier2.prod.li.dikdik.io',
+    'http://ingraphs.prod.linkedin.com',
+]; // Add more origins if needed
 
 // app.use(bodyParser.text({ type: 'text/plain' }));
 app.use(express.text());
@@ -34,7 +36,6 @@ app.use(cookieParser());
 // }));
 
 app.use(function(req, res, next) {
-    const allowedOrigins = [TEST_WEBSITE]; // Add more origins if needed
     const origin = req.headers.origin;
 
     if (allowedOrigins.includes(origin)) {
@@ -47,27 +48,37 @@ app.use(function(req, res, next) {
 
      // Check if the 'cookie' header is present in the request
     const withCredentials = req.get('cookie') !== undefined;
-    // console.log('Request withCredentials:', withCredentials);
-    // console.log('Request cookie:', req.headers.cookie);
+    console.log('Request withCredentials:', withCredentials);
+    console.log('Request cookie:', req.headers.cookie);
     
     next();
 });
 
 
+let lastBodyReceived = null;
+
 // Endpoint to handle POST requests to /ws
 app.post('/wa', (req, res) => {
-    // console.log('Req bod', req.body);
-    // console.log('Req cookies', req.cookies);
+    console.log('Req body type', typeof req.body);
+    console.log('Req body', JSON.parse(req.body));
+
+    lastBodyReceived = JSON.parse(req.body);
+    
+    console.log('Req cookies', req.cookies);
     console.log('Req headers.cookie', req.headers.cookie);
     
     runCode();
 
     res.cookie('testCookie', 'testValue');
-    res.status(200).json({ message: 'Request received successfully' });
+    res.status(204).send();
 });
 
 // Endpoint to set cookies on the client-side
 app.get('/', (req, res) => {
+    res.status(200).json({ body: lastBodyReceived });
+});
+
+app.get('/set-cookie', (req, res) => {
     // Set cookies in the response
     res.cookie('cookieName1', 'value1', { maxAge: 3600000, httpOnly: true });
     res.cookie('cookieName2', 'value2', { maxAge: 3600000, httpOnly: true });
