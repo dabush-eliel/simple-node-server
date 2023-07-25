@@ -16,9 +16,9 @@ app.use(function(req, res, next) {
 
     if (allowedOrigins.includes(origin)) {
         res.header('Access-Control-Allow-Origin', origin);
+        res.header('Access-Control-Allow-Credentials', 'true');
     }
 
-    res.header('Access-Control-Allow-Credentials', 'true');
 
     // change body parser to get JSON and validate if these headers are needed
     // res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
@@ -33,13 +33,14 @@ let lastBodyReceived = null;
 // Endpoint to handle POST requests to /wa
 app.post('/wa', (req, res) => {
     console.log('Req body type', typeof req.body);
+    console.log('Req body', req.body);
     lastBodyReceived = req.body; // when using express.json()
     // lastBodyReceived = JSON.parse(req.body); // when using express.text()
     
     runCode();
 
     res.cookie('testCookie', 'testValue');
-    res.status(204).send();
+    res.status(200).send();
 });
 
 // GET the last body received
