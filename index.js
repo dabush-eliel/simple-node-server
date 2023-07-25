@@ -42,14 +42,16 @@ app.use(function(req, res, next) {
         res.header('Access-Control-Allow-Origin', origin);
     }
 
-    res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
     res.header('Access-Control-Allow-Credentials', 'true');
+
+    // change body parser to get JSON and validate if these headers are needed
+    // res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
     // res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
 
      // Check if the 'cookie' header is present in the request
-    const withCredentials = req.get('cookie') !== undefined;
-    console.log('Request withCredentials:', withCredentials);
-    console.log('Request cookie:', req.headers.cookie);
+    // const withCredentials = req.get('cookie') !== undefined;
+    // console.log('Request withCredentials:', withCredentials);
+    // console.log('Request cookie:', req.headers.cookie);
     
     next();
 });
@@ -65,7 +67,7 @@ app.post('/wa', (req, res) => {
     lastBodyReceived = JSON.parse(req.body);
     
     console.log('Req cookies', req.cookies);
-    console.log('Req headers.cookie', req.headers.cookie);
+    console.log('Req signed cookies: ', req.signedCookies)
     
     runCode();
 
